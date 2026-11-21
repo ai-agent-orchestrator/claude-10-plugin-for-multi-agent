@@ -108,6 +108,34 @@ Python 기반 오케스트레이터(CEO/CTO/Coder 구조, LangGraph 파이프라
 
 ---
 
+## 실행 가능한 예제 (`examples/`)
+
+위 패턴을 독립적으로 구현한 예시 코드입니다. 원본 플러그인 코드를 복사한 것이 **아닙니다**. 표준 라이브러리만 사용하며, LangGraph 빌드만 선택 사항입니다.
+
+| 파일 | 참고한 패턴 | 제공 기능 |
+|:--|:--|:--|
+| [`guardrail.py`](examples/guardrail.py) | `security-guidance`, `hookify` | 정규식 사전 스캔 + 교체 가능한 LLM 검증기. `guard()`로 에이전트 호출을 입출력 미들웨어로 감쌈 |
+| [`loop_control.py`](examples/loop_control.py) | `ralph-loop` | `max_iterations`·비용 상한을 가진 `run_loop()`, 종료 사유 반환 |
+| [`review_aggregator.py`](examples/review_aggregator.py) | `code-review`, `pr-review-toolkit` | 병렬 리뷰어, 중복 제거, 합의 가점, 신뢰도 80점 컷오프 |
+| [`prompt_loader.py`](examples/prompt_loader.py) | 전체 플러그인 | `agents/*.md`, `skills/*/SKILL.md`를 시스템 프롬프트로 로드 |
+| [`orchestrator.py`](examples/orchestrator.py) | `feature-dev` | Explorer → Architect → Implementer → Reviewer 파이프라인 (순수 Python / LangGraph) |
+| [`cli_subagent.py`](examples/cli_subagent.py) | 방법 A | `claude -p`를 subprocess로 호출 (CLI 필요, 테스트 대상 아님) |
+
+```bash
+pip install pytest langgraph   # langgraph는 선택
+python -m pytest examples/tests
+```
+
+```python
+from guardrail import guard
+from loop_control import run_loop
+
+safe_agent = guard(my_agent_call)                      # 위험한 입출력 차단
+result = run_loop(step, is_done, seed="", max_iterations=5)
+```
+
+---
+
 ## 실전 팁
 
 - **`/plugins` 디렉터리 우선 활용:** Anthropic 팀이 직접 관리하는 순수 프롬프트·파이썬 훅 위주입니다. `/external_plugins`는 외부 서드파티 MCP 연동이 섞여 있으므로 사용 전 설정 파일(`.mcp.json`)을 먼저 확인하세요.
