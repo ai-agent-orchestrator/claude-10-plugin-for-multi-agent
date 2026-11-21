@@ -108,6 +108,34 @@ Extract two kinds of files from a plugin folder:
 
 ---
 
+## Runnable Examples (`examples/`)
+
+Independent, illustrative implementations of the patterns above. They are **not** copies of the upstream plugin code. Stdlib only, except the optional LangGraph build.
+
+| File | Pattern from | What it provides |
+|:--|:--|:--|
+| [`guardrail.py`](examples/guardrail.py) | `security-guidance`, `hookify` | Regex pre-scan + pluggable LLM verifier; `guard()` wraps any agent call as input/output middleware |
+| [`loop_control.py`](examples/loop_control.py) | `ralph-loop` | `run_loop()` with `max_iterations` and cost caps, plus a stop reason |
+| [`review_aggregator.py`](examples/review_aggregator.py) | `code-review`, `pr-review-toolkit` | Parallel reviewers, dedupe, agreement boost, confidence-80 cutoff |
+| [`prompt_loader.py`](examples/prompt_loader.py) | all plugins | Loads `agents/*.md` and `skills/*/SKILL.md` as system prompts |
+| [`orchestrator.py`](examples/orchestrator.py) | `feature-dev` | Explorer → Architect → Implementer → Reviewer pipeline, plain Python and LangGraph |
+| [`cli_subagent.py`](examples/cli_subagent.py) | Method A | Calls `claude -p` via subprocess (needs the CLI; not covered by tests) |
+
+```bash
+pip install pytest langgraph   # langgraph is optional
+python -m pytest examples/tests
+```
+
+```python
+from guardrail import guard
+from loop_control import run_loop
+
+safe_agent = guard(my_agent_call)                      # blocks risky input/output
+result = run_loop(step, is_done, seed="", max_iterations=5)
+```
+
+---
+
 ## Practical Tips
 
 - **Prefer the `/plugins` directory:** it is maintained by the Anthropic team and consists mostly of plain prompts and Python hooks. `/external_plugins` mixes in third-party MCP integrations, so check the config file (`.mcp.json`) first.
