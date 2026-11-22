@@ -1,9 +1,96 @@
 # 10 Claude Code Plugins for Multi-Agent Systems & Productivity
 
-> A curated selection of 10 practical plugins from [`anthropics/claude-plugins-official`](https://github.com/anthropics/claude-plugins-official), organized by **system architecture, security & loop control** and **research & documentation productivity**.
-> Intended as a **feature reference table for reusing these plugins as modules** later.
+> An **installable marketplace containing 14 actual plugins across 10 practical categories**.
+> Plugin source is bundled from [`ai-agent-orchestrator/claude-plugins-official`](https://github.com/ai-agent-orchestrator/claude-plugins-official), ready to download or install in Claude Code.
 
 **English** | [한국어](https://github.com/ai-agent-orchestrator/claude-10-plugin-for-multi-agent/tree/readme-ko)
+
+## Download and install
+
+**[Download all plugins as a ZIP](https://github.com/ai-agent-orchestrator/claude-10-plugin-for-multi-agent/archive/refs/heads/readme-en.zip)** · **[Browse plugin files](plugins/)**
+
+The ZIP includes the actual hooks, agents, skills, scripts, language-server integration settings, and `.claude-plugin/marketplace.json`. No submodule initialization or separate upstream checkout is needed.
+
+In a **Claude Code conversation**, register this marketplace once and install the plugins you need:
+
+```text
+/plugin marketplace add ai-agent-orchestrator/claude-10-plugin-for-multi-agent
+/plugin install security-guidance@claude-10-multi-agent
+/plugin install feature-dev@claude-10-multi-agent
+/plugin install pr-review-toolkit@claude-10-multi-agent
+```
+
+To install the full selection, run these commands individually after registration:
+
+```text
+/plugin install security-guidance@claude-10-multi-agent
+/plugin install hookify@claude-10-multi-agent
+/plugin install ralph-loop@claude-10-multi-agent
+/plugin install feature-dev@claude-10-multi-agent
+/plugin install code-review@claude-10-multi-agent
+/plugin install pr-review-toolkit@claude-10-multi-agent
+/plugin install pyright-lsp@claude-10-multi-agent
+/plugin install jdtls-lsp@claude-10-multi-agent
+/plugin install session-report@claude-10-multi-agent
+/plugin install project-md-management@claude-10-multi-agent
+/plugin install playground@claude-10-multi-agent
+/plugin install skill-creator@claude-10-multi-agent
+/plugin install explanatory-output-style@claude-10-multi-agent
+/plugin install plugin-dev@claude-10-multi-agent
+```
+
+The bundled `claude-md-management` installs as **`project-md-management`** because current Claude Code reserves the `claude-` prefix for Anthropic plugins. Its directory keeps the upstream name and its behavior is unchanged. See [third-party notices](THIRD_PARTY_NOTICES.md) for the metadata adaptation.
+
+### Use local files
+
+Clone this branch, or extract the ZIP above, then register the local directory:
+
+```bash
+git clone --branch readme-en https://github.com/ai-agent-orchestrator/claude-10-plugin-for-multi-agent.git
+cd claude-10-plugin-for-multi-agent
+claude plugin marketplace add .
+claude plugin install feature-dev@claude-10-multi-agent
+```
+
+For a single session without registering a marketplace:
+
+```bash
+claude --plugin-dir ./plugins/feature-dev
+```
+
+### Bundled plugins
+
+| Purpose | Actual source files | Install name |
+|:--|:--|:--|
+| Security guardrails | [security-guidance](plugins/security-guidance/) | `security-guidance` |
+| Event hooks | [hookify](plugins/hookify/) | `hookify` |
+| Iteration control | [ralph-loop](plugins/ralph-loop/) | `ralph-loop` |
+| Role-separated development | [feature-dev](plugins/feature-dev/) | `feature-dev` |
+| Code review | [code-review](plugins/code-review/) | `code-review` |
+| PR review | [pr-review-toolkit](plugins/pr-review-toolkit/) | `pr-review-toolkit` |
+| Python language server | [pyright-lsp](plugins/pyright-lsp/) | `pyright-lsp` |
+| Java language server | [jdtls-lsp](plugins/jdtls-lsp/) | `jdtls-lsp` |
+| Session usage reports | [session-report](plugins/session-report/) | `session-report` |
+| Project instructions | [claude-md-management](plugins/claude-md-management/) | `project-md-management` |
+| Interactive HTML | [playground](plugins/playground/) | `playground` |
+| Skill creation and evaluation | [skill-creator](plugins/skill-creator/) | `skill-creator` |
+| Explanatory output | [explanatory-output-style](plugins/explanatory-output-style/) | `explanatory-output-style` |
+| Plugin development | [plugin-dev](plugins/plugin-dev/) | `plugin-dev` |
+
+Append `@claude-10-multi-agent` to the install name to use the version bundled here.
+
+### Requirements and verification
+
+Use an installed, authenticated Claude Code CLI. Check each plugin's files and documentation for its external dependencies. For example, `ralph-loop` uses Bash, `jq`, and Perl; `security-guidance` uses Bash and Python; `hookify` uses Python 3; and `session-report` uses Node.js. Bash hooks on Windows need a Bash environment such as Git Bash.
+
+The LSP plugins bundle **integration settings**. Install the actual `pyright-langserver` or `jdtls` executable separately and put it on `PATH`. See the [Python instructions](plugins/pyright-lsp/README.md) and [Java instructions](plugins/jdtls-lsp/README.md).
+
+```bash
+python scripts/verify_plugins.py
+claude plugin validate .
+```
+
+[plugins.lock.json](plugins.lock.json) pins the upstream commit and per-file checksums. Installation follows the [official Claude Code marketplace documentation](https://code.claude.com/docs/en/plugin-marketplaces).
 
 ---
 
@@ -42,7 +129,7 @@ The upstream repository is a collection of design blueprints for **skills (`SKIL
 
 | # | Plugin | Core Function | Key Takeaway / Reference Value |
 |:-:|:--|:--|:--|
-| 7 | `session-report` | Summarizes long work/research sessions into structured logs of completed tasks, changes, and key decisions | Context compression for distilling long research threads into concise records |
+| 7 | `session-report` | Generates HTML reports of tokens, cache efficiency, subagents, and expensive prompts from local Claude Code session transcripts | Inspect session usage, costs, and agent activity |
 | 8 | `claude-md-management` | Updates project guidelines from session learnings via `/revise-claude-md` | Keeps accumulated agent rules consistent without rewriting instructions each time |
 | 9 | `playground` | Generates a single standalone interactive HTML file for research data, document critiques (`document-critique`), and concept maps (`concept-map`) | Zero-server visualization of complex material and timelines |
 | 10 | `skill-creator` / `explanatory-output-style` | Packages repeatable workflows into `SKILL.md` with evals (`skill-creator`); outputs design trade-off insights alongside results (`explanatory-output-style`) | Turns repetitive review checklists into reusable, testable playbooks |
@@ -63,9 +150,9 @@ These plugins are designed for **Claude Code, the terminal CLI**. They do not wo
 
 ### 1) Claude Code (terminal CLI)
 
-```bash
-claude
-/plugin install security-guidance@claude-plugins-official
+```text
+/plugin marketplace add ai-agent-orchestrator/claude-10-plugin-for-multi-agent
+/plugin install security-guidance@claude-10-multi-agent
 ```
 
 After installation, the plugin's Python hooks (`hooks/*.py`) and instructions (`SKILL.md`) intervene automatically whenever Claude edits local files or runs terminal commands.
@@ -102,7 +189,7 @@ Extract two kinds of files from a plugin folder:
 | Role-separated orchestration | `feature-dev` | Per-stage agent prompts, state transitions |
 | Result aggregation & filtering | `code-review`, `pr-review-toolkit` | Parallel-agent aggregation, confidence-80 cutoff |
 | Code hallucination prevention | `pyright-lsp`, `jdtls-lsp` | Language-server diagnostics integration |
-| Session summary & memory | `session-report`, `claude-md-management` | Structured summary template, guideline update rules |
+| Session analysis & memory | `session-report`, `claude-md-management` | Usage-report HTML, guideline update rules |
 | Visualization output | `playground` | Single-file HTML generation template |
 | Playbook standardization | `skill-creator`, `explanatory-output-style` | `SKILL.md` format, evals, trade-off output rules |
 
@@ -145,5 +232,6 @@ result = run_loop(step, is_done, seed="", max_iterations=5)
 
 ## Notes & Caveats
 
-- Plugin names, features, and file paths here are transcribed from the provided summary notes and were not independently verified against the upstream repository. Check the actual structure and license before extracting modules.
-- Upstream: <https://github.com/anthropics/claude-plugins-official>
+- The 14 bundled plugin manifests, files, and licenses were checked against upstream. The `session-report` description now reflects its actual usage-analysis function.
+- Imported from [ai-agent-orchestrator/claude-plugins-official](https://github.com/ai-agent-orchestrator/claude-plugins-official), pinned at `0412be76f50ab4f4f8abff3753efa9269fbbca5b`.
+- See [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md) for authorship, licenses, and the redistributed metadata adaptation. This is an independent curated collection, separate from Anthropic's official marketplace.
