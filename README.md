@@ -1,9 +1,96 @@
 # Claude Code 플러그인 10선 — 멀티 에이전트 & 생산성 모듈 가이드
 
-> [`anthropics/claude-plugins-official`](https://github.com/anthropics/claude-plugins-official) 저장소에서 **시스템 설계·보안·루프 제어**와 **리서치·문서 정리 생산성** 관점으로 실용적인 플러그인 10가지를 추려 정리한 문서입니다.
-> 나중에 **모듈로 가져다 쓰기 위한 기능 목록표(레퍼런스)** 로 사용합니다.
+> **10개 활용 범주에 해당하는 실제 플러그인 14개를 포함한 설치형 마켓플레이스**입니다.
+> 요청한 [`ai-agent-orchestrator/claude-plugins-official`](https://github.com/ai-agent-orchestrator/claude-plugins-official)에서 플러그인 본체를 가져왔으며, 아래에서 다운로드하거나 Claude Code에 설치할 수 있습니다.
 
 [English](https://github.com/ai-agent-orchestrator/claude-10-plugin-for-multi-agent/tree/readme-en) | **한국어**
+
+## 바로 다운로드 · 설치
+
+**[전체 플러그인 ZIP 다운로드](https://github.com/ai-agent-orchestrator/claude-10-plugin-for-multi-agent/archive/refs/heads/readme-ko.zip)** · **[플러그인 파일 보기](plugins/)**
+
+ZIP에는 `plugins/` 아래 실제 훅·에이전트·스킬·스크립트·언어 서버 연동 설정과 `.claude-plugin/marketplace.json`이 들어 있습니다. 서브모듈 초기화나 별도 원본 저장소 다운로드가 필요하지 않습니다.
+
+Claude Code **대화창**에서 마켓플레이스를 한 번 등록한 뒤 필요한 플러그인을 설치하세요.
+
+```text
+/plugin marketplace add ai-agent-orchestrator/claude-10-plugin-for-multi-agent
+/plugin install security-guidance@claude-10-multi-agent
+/plugin install feature-dev@claude-10-multi-agent
+/plugin install pr-review-toolkit@claude-10-multi-agent
+```
+
+전체 14개를 설치하려면 등록 후 아래 명령을 각각 실행합니다.
+
+```text
+/plugin install security-guidance@claude-10-multi-agent
+/plugin install hookify@claude-10-multi-agent
+/plugin install ralph-loop@claude-10-multi-agent
+/plugin install feature-dev@claude-10-multi-agent
+/plugin install code-review@claude-10-multi-agent
+/plugin install pr-review-toolkit@claude-10-multi-agent
+/plugin install pyright-lsp@claude-10-multi-agent
+/plugin install jdtls-lsp@claude-10-multi-agent
+/plugin install session-report@claude-10-multi-agent
+/plugin install project-md-management@claude-10-multi-agent
+/plugin install playground@claude-10-multi-agent
+/plugin install skill-creator@claude-10-multi-agent
+/plugin install explanatory-output-style@claude-10-multi-agent
+/plugin install plugin-dev@claude-10-multi-agent
+```
+
+`claude-md-management`는 최신 Claude Code의 제3자 플러그인 이름 제한 때문에 **`project-md-management`**로 설치합니다. 폴더 이름은 원본대로 유지하며 기능은 같습니다. 상세 변경은 [출처·라이선스 안내](THIRD_PARTY_NOTICES.md)에 기록했습니다.
+
+### 로컬 파일로 사용
+
+터미널에서 저장소를 받거나 위 ZIP을 풀어 사용하세요.
+
+```bash
+git clone https://github.com/ai-agent-orchestrator/claude-10-plugin-for-multi-agent.git
+cd claude-10-plugin-for-multi-agent
+claude plugin marketplace add .
+claude plugin install feature-dev@claude-10-multi-agent
+```
+
+마켓플레이스 등록 없이 한 세션에서만 불러올 수도 있습니다.
+
+```bash
+claude --plugin-dir ./plugins/feature-dev
+```
+
+### 포함된 플러그인 본체
+
+| 활용 범주 | 실제 파일 | 설치 이름 |
+|:--|:--|:--|
+| 보안 가드레일 | [security-guidance](plugins/security-guidance/) | `security-guidance` |
+| 이벤트 훅 | [hookify](plugins/hookify/) | `hookify` |
+| 반복 제어 | [ralph-loop](plugins/ralph-loop/) | `ralph-loop` |
+| 역할 분담 개발 | [feature-dev](plugins/feature-dev/) | `feature-dev` |
+| 코드 리뷰 | [code-review](plugins/code-review/) | `code-review` |
+| PR 리뷰 | [pr-review-toolkit](plugins/pr-review-toolkit/) | `pr-review-toolkit` |
+| Python 언어 서버 | [pyright-lsp](plugins/pyright-lsp/) | `pyright-lsp` |
+| Java 언어 서버 | [jdtls-lsp](plugins/jdtls-lsp/) | `jdtls-lsp` |
+| 세션 사용량 보고서 | [session-report](plugins/session-report/) | `session-report` |
+| 프로젝트 지침 관리 | [claude-md-management](plugins/claude-md-management/) | `project-md-management` |
+| HTML 시각화 | [playground](plugins/playground/) | `playground` |
+| 스킬 제작·평가 | [skill-creator](plugins/skill-creator/) | `skill-creator` |
+| 설명형 출력 | [explanatory-output-style](plugins/explanatory-output-style/) | `explanatory-output-style` |
+| 플러그인 제작 | [plugin-dev](plugins/plugin-dev/) | `plugin-dev` |
+
+설치 이름 뒤에 `@claude-10-multi-agent`를 붙이면 이 저장소에 포함된 버전이 설치됩니다.
+
+### 실행 환경과 파일 검증
+
+Claude Code를 설치·인증한 환경에서 사용합니다. 훅의 외부 의존성은 각 플러그인 설정과 문서를 확인하세요. 예를 들어 `ralph-loop`는 Bash·`jq`·Perl, `security-guidance`는 Bash·Python, `hookify`는 Python 3을 사용합니다. `session-report`는 Node.js가 필요합니다. Windows의 Bash 훅에는 Git Bash 등 Bash 환경이 필요합니다.
+
+LSP 플러그인은 **연동 설정**을 포함합니다. 실제 `pyright-langserver` 또는 `jdtls` 실행 파일은 별도로 설치해 `PATH`에 두어야 합니다. 설치 방법은 [Python 안내](plugins/pyright-lsp/README.md)와 [Java 안내](plugins/jdtls-lsp/README.md)를 확인하세요.
+
+```bash
+python scripts/verify_plugins.py
+claude plugin validate .
+```
+
+[plugins.lock.json](plugins.lock.json)에 원본 커밋과 파일별 체크섬을 고정했습니다. 설치 구성은 [Claude Code 공식 마켓플레이스 문서](https://code.claude.com/docs/en/plugin-marketplaces)를 따릅니다.
 
 ---
 
@@ -42,7 +129,7 @@
 
 | # | 플러그인 | 핵심 기능 | 활용 및 참고 포인트 |
 |:-:|:--|:--|:--|
-| 7 | `session-report` | 긴 작업·리서치 세션을 수행 내역·변경점·핵심 결정 사항 중심으로 구조화 요약 | 방대한 조사·대화 로그를 핵심만 남겨 압축 정리 |
+| 7 | `session-report` | 로컬 Claude Code 세션 기록에서 토큰·캐시 효율·서브에이전트·비용이 큰 프롬프트를 HTML 보고서로 분석 | 작업 세션의 사용량·비용·에이전트 활용 현황 점검 |
 | 8 | `claude-md-management` | 세션에서 도출된 규칙·학습 내용을 `/revise-claude-md`로 프로젝트 지침서에 자동 반영 | 매번 지침을 다시 쓰지 않고 누적 규칙을 일관되게 유지 |
 | 9 | `playground` | 조사 데이터, 문서 비평(document-critique), 개념도(concept-map)를 단일 인터랙티브 HTML 파일로 생성 | 별도 서버 없이 복잡한 자료·타임라인을 한눈에 시각화 |
 | 10 | `skill-creator` / `explanatory-output-style` | 반복 업무를 `SKILL.md`로 패키징하고 evals로 성능 평가(`skill-creator`), 설계 트레이드오프 인사이트를 함께 출력(`explanatory-output-style`) | 반복 검토 체크리스트를 재사용·검증 가능한 표준 플레이북으로 모듈화 |
@@ -63,9 +150,9 @@
 
 ### 1) Claude Code (터미널 CLI)
 
-```bash
-claude
-/plugin install security-guidance@claude-plugins-official
+```text
+/plugin marketplace add ai-agent-orchestrator/claude-10-plugin-for-multi-agent
+/plugin install security-guidance@claude-10-multi-agent
 ```
 
 설치 후에는 Claude가 로컬 파일을 수정하거나 터미널 명령을 실행할 때마다 플러그인의 파이썬 훅(`hooks/*.py`)과 지침(`SKILL.md`)이 자동으로 개입합니다.
@@ -102,7 +189,7 @@ Python 기반 오케스트레이터(CEO/CTO/Coder 구조, LangGraph 파이프라
 | 역할 분담 오케스트레이션 | `feature-dev` | 단계별 에이전트 프롬프트, 상태 전이 |
 | 결과 취합·필터링 | `code-review`, `pr-review-toolkit` | 병렬 에이전트 집계, 신뢰도 80점 컷오프 |
 | 코드 환각 방지 | `pyright-lsp`, `jdtls-lsp` | 언어 서버 진단 연동 |
-| 세션 요약·메모리 | `session-report`, `claude-md-management` | 구조화 요약 템플릿, 지침 갱신 규칙 |
+| 세션 분석·메모리 | `session-report`, `claude-md-management` | 사용량 HTML 보고서, 지침 갱신 규칙 |
 | 시각화 산출물 | `playground` | 단일 HTML 생성 템플릿 |
 | 플레이북 표준화 | `skill-creator`, `explanatory-output-style` | `SKILL.md` 포맷, evals, 트레이드오프 출력 규칙 |
 
@@ -145,5 +232,6 @@ result = run_loop(step, is_done, seed="", max_iterations=5)
 
 ## 참고 및 주의사항
 
-- 이 문서의 플러그인 이름·기능·파일 경로는 제공된 정리 노트를 그대로 옮긴 것이며, 원본 저장소와 대조해 별도로 검증하지 않았습니다. 모듈로 가져오기 전에 원본의 실제 구조와 라이선스를 확인하세요.
-- 원본: <https://github.com/anthropics/claude-plugins-official>
+- 포함된 14개 플러그인의 매니페스트·실제 파일·라이선스를 원본과 대조했습니다. `session-report` 설명도 실제 사용량 분석 기능에 맞게 수정했습니다.
+- 가져온 저장소: [ai-agent-orchestrator/claude-plugins-official](https://github.com/ai-agent-orchestrator/claude-plugins-official), 고정 커밋 `0412be76f50ab4f4f8abff3753efa9269fbbca5b`.
+- 원저작자·라이선스·배포 시 메타데이터 변경: [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md). 이 저장소는 Anthropic 공식 마켓플레이스와 별개의 큐레이션 배포본입니다.
